@@ -1,16 +1,16 @@
-import { useLocation } from 'react-router-dom';
-import AppRoutes from './routes/AppRoutes';
+import ScrollToTop from "@/components/ScrollToTop";
+import CookieBanner from "@/components/CookieBanner";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
-  const location = useLocation();
-
-  const showHeader = location.pathname === '/';
-
   return (
-    <div>
-      {showHeader && <header>Welcome to the Home Page</header>}
+    <>
+      <ScrollToTop />
+      <CookieBanner />
+
       <AppRoutes />
-    </div>
+    </>
   );
 }
+
 export default App;
