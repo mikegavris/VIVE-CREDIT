@@ -102,7 +102,7 @@ const [, setDocsOpen] = useState(false);
             value={searchClient}
             onChange={(e) => setSearchClient(e.target.value)}
             placeholder="Caută client..."
-            className="border px-3 py-2 rounded-lg shadow-sm"
+            className="border dark:border-gray-600 px-3 py-2 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
           />
         </div>
 
@@ -144,7 +144,7 @@ const [, setDocsOpen] = useState(false);
             value={selectedAgent}
             onChange={(e) => setSelectedAgent(e.target.value)}
             placeholder="Caută agent..."
-            className="border px-3 py-2 rounded-lg shadow-sm"
+            className="border dark:border-gray-600 px-3 py-2 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
           />
         </div>
       </div>
@@ -160,20 +160,20 @@ const [, setDocsOpen] = useState(false);
       {/* --- Table --- */}
       <div className="overflow-x-auto border rounded-xl shadow-sm">
         <table className="w-full text-left">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="px-4 py-3 font-semibold">ID</th>
-              <th className="px-4 py-3 font-semibold">Client</th>
-              <th className="px-4 py-3 font-semibold">Produs</th>
-              <th className="px-4 py-3 font-semibold">Sumă</th>
-              <th className="px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3 font-semibold">Acțiuni</th>
-            </tr>
-          </thead>
+         <thead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
+  <tr>
+    <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">ID</th>
+    <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">Client</th>
+    <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">Produs</th>
+    <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">Sumă</th>
+    <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">Status</th>
+    <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">Acțiuni</th>
+  </tr>
+</thead>
 
           <tbody>
             {filteredData.map((app) => (
-              <tr key={app.id} className="border-b hover:bg-gray-50 transition">
+              <tr key={app.id} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
                 <td className="px-4 py-3">{app.id}</td>
                 <td className="px-4 py-3">{app.client}</td>
                 <td className="px-4 py-3">{app.product}</td>
