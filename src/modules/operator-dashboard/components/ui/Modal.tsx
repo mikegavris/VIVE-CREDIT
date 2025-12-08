@@ -50,7 +50,6 @@ export default function Modal({
           ${className}
         `}
       >
-        {/* Header */}
         {(title || icon) && (
           <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             {icon && <div className="text-blue-600 text-2xl">{icon}</div>}
@@ -68,12 +67,10 @@ export default function Modal({
           </div>
         )}
 
-        {/* Content */}
         <div className="p-6 max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent">
           {children}
         </div>
 
-        {/* Footer */}
         {footer && (
           <div className="sticky bottom-0 z-10 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 p-4">
             {footer}

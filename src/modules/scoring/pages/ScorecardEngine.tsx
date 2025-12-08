@@ -79,7 +79,9 @@ export const ScorecardEngine: React.FC = () => {
     setOpenRow(openRow === rowId ? null : rowId);
   };
 
-  const totalWeight = variables.reduce((sum, v) => sum + v.weight, 0);
+  const totalWeight = variables
+    .filter((v) => v.active)
+    .reduce((sum, v) => sum + v.weight, 0);
   const isWeightValid = totalWeight.toFixed(2) === '1.00';
 
   return (
@@ -135,21 +137,29 @@ export const ScorecardEngine: React.FC = () => {
             {/* Desktop */}
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-left border border-gray-200 rounded-lg overflow-hidden mt-6">
-                <thead className="bg-gray-100">
+                <thead className="bg-blue-100 ">
                   <tr>
-                    <th className="p-3 border">Nume variabilă</th>
-                    <th className="p-3 border">Tip</th>
-                    <th className="p-3 border">Pondere</th>
-                    <th className="p-3 border">Nr. reguli</th>
-                    <th className="p-3 border text-center">Activă</th>
-                    <th className="p-3 border text-center">Acțiuni</th>
+                    <th className="p-3 border border-gray-300">
+                      Nume variabilă
+                    </th>
+                    <th className="p-3 border border-gray-300">Tip</th>
+                    <th className="p-3 border border-gray-300">Pondere</th>
+                    <th className="p-3 border border-gray-300">Nr. reguli</th>
+                    <th className="p-3 border border-gray-300 text-center">
+                      Activă
+                    </th>
+                    <th className="p-3 border border-gray-300 text-center">
+                      Acțiuni
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {variables.map((v) => (
                     <tr
                       key={v.id}
-                      className="hover:bg-gray-50 transition capitalize"
+                      className={`hover:bg-blue-50/50 transition capitalize ${
+                        !v.active ? 'bg-gray-100' : ''
+                      }`}
                     >
                       <td className="p-3 border font-medium  ">
                         {displayVariableName(v.name)}
@@ -183,35 +193,47 @@ export const ScorecardEngine: React.FC = () => {
                               Reguli
                             </button>
                             {openRow === v.id && (
-                              <div className="absolute bg-white shadow-xl rounded-md border px-4 py-2 overflow-y-auto max-h-24 max-w-30 z-10 mb-50 top-[-60%] left-1/2 transform -translate-x-1/2">
-                                {v.rules.map((rule, i) => (
-                                  <div
-                                    key={i}
-                                    className="flex justify-between border-b"
-                                  >
-                                    <div className="flex flex-col  ">
-                                      <p className="text-xs text-left">
-                                        Condiție:
-                                      </p>
-                                      <p className="text-blue-500 text-xs text-left">
-                                        {rule.condition}
-                                      </p>
-                                    </div>
-                                    <div className="flex flex-col px-4 ">
-                                      <p className="text-xs text-left">Scor:</p>
-                                      <p className="text-blue-800 text-xs font-semibold text-left">
-                                        {rule.score}
-                                      </p>
-                                    </div>
-                                  </div>
-                                ))}
-                                <button
+                              <>
+                                <div
                                   onClick={() => setOpenRow(null)}
-                                  className="mt-2 text-xs bg-blue-500 text-white rounded px-2 py-1 w-full"
+                                  className="fixed inset-0 z-0"
+                                ></div>
+
+                                <div
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="absolute bg-white shadow-xl rounded-md border border-2 border-blue-400 px-4 py-2 overflow-y-auto max-h-28 max-w-48 z-10 mb-50 top-[-60%] left-1/2 transform -translate-x-1/2"
                                 >
-                                  Închide
-                                </button>
-                              </div>
+                                  {v.rules.map((rule, i) => (
+                                    <div
+                                      key={i}
+                                      className="flex justify-between border border-blue-100 rounded-md px-2 py-1 bg-blue-50 mt-2 shadow-md"
+                                    >
+                                      <div className="flex flex-col  ">
+                                        <p className="text-xs text-left">
+                                          Condiție:
+                                        </p>
+                                        <p className="text-blue-500 text-xs text-left">
+                                          {rule.condition}
+                                        </p>
+                                      </div>
+                                      <div className="flex flex-col px-4 ">
+                                        <p className="text-xs text-left">
+                                          Scor:
+                                        </p>
+                                        <p className="text-blue-800 text-xs font-semibold text-left">
+                                          {rule.score}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  <button
+                                    onClick={() => setOpenRow(null)}
+                                    className="mt-2 text-xs font-bold bg-blue-100 text-blue-500 hover:bg-blue-200/70 rounded px-2 py-1 w-full"
+                                  >
+                                    Închide
+                                  </button>
+                                </div>
+                              </>
                             )}
                           </div>
                         )}
@@ -246,7 +268,9 @@ export const ScorecardEngine: React.FC = () => {
               {variables.map((v) => (
                 <div
                   key={v.id}
-                  className="border rounded-lg p-4 shadow-sm bg-white  flex flex-col gap-2"
+                  className={`border rounded-lg p-4 shadow-sm   flex flex-col gap-2 ${
+                    !v.active ? 'bg-gray-100' : 'bg-white'
+                  }`}
                 >
                   <div className="capitalize">
                     <span className="font-semibold">Nume variabilă: </span>
@@ -264,9 +288,64 @@ export const ScorecardEngine: React.FC = () => {
                     <span className="font-semibold">Pondere: </span>
                     {v.weight.toFixed(2)}
                   </div>
-                  <div>
+                  <div className="flex gap-2">
                     <span className="font-semibold">Nr. reguli: </span>
-                    {v.rules.length}
+                    <div className=" text-center relative">
+                      {v.rules.length === 0 ? (
+                        v.rules.length
+                      ) : (
+                        <div className="flex gap-2 ">
+                          {v.rules.length}
+                          <button
+                            onClick={() => handleShowModalRules(v.id)}
+                            className="text-xs px-2 py-1 border border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 hover:text-blue-400"
+                          >
+                            Reguli
+                          </button>
+                          {openRow === v.id && (
+                            <>
+                              <div
+                                onClick={() => setOpenRow(null)}
+                                className="fixed inset-0 z-0"
+                              ></div>
+
+                              <div
+                                onClick={(e) => e.stopPropagation()}
+                                className="absolute bg-white shadow-xl rounded-md border border-2 border-blue-200 px-4 py-2 overflow-y-auto max-h-28 max-w-30 z-10  top-[-160%] left-[150%] transform -translate-x-1/2"
+                              >
+                                {v.rules.map((rule, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex justify-between border border-blue-100 rounded-md px-2 py-1 bg-blue-50 mt-2 shadow-md"
+                                  >
+                                    <div className="flex flex-col  ">
+                                      <p className="text-xs text-left">
+                                        Condiție:
+                                      </p>
+                                      <p className="text-blue-500 text-xs text-left">
+                                        {rule.condition}
+                                      </p>
+                                    </div>
+                                    <div className="flex flex-col px-4 ">
+                                      <p className="text-xs text-left">Scor:</p>
+                                      <p className="text-blue-800 text-xs font-semibold text-left">
+                                        {rule.score}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                                <button
+                                  onClick={() => setOpenRow(null)}
+                                  className="mt-2 text-xs bg-blue-500 text-white rounded px-2 py-1 w-full"
+                                >
+                                  Închide
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div>
                     <span className="font-semibold">Activă: </span>

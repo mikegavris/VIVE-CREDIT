@@ -320,7 +320,7 @@ export const ScorecardVariablesModal: React.FC<PropsModal> = ({
               </div>
               <button
                 onClick={() => removeRule(i)}
-                className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                className="px-2 py-2 bg-blue-100 text-blue-500 rounded-md hover:bg-blue-200"
               >
                 Șterge
               </button>

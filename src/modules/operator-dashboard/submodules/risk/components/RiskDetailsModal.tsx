@@ -1,18 +1,19 @@
-import Modal from "../../../components/ui/Modal";
-import type { RiskApplication } from "../pages/RiskDashboard";
-import { reasonCodeMap } from "../constants/reasoneCodeMap";
-import Button from "@/modules/operator-dashboard/components/ui/Button";
-import { ShieldCheck } from "lucide-react";
 import { useRef, useState } from "react";
+import Modal from "../../../components/ui/Modal";
+import Button from "@/modules/operator-dashboard/components/ui/Button";
+import type { RiskApplication } from "../pages/RiskDashboard";
+import { ShieldCheck } from "lucide-react";
 
 interface Props {
   application: RiskApplication;
   isOpen: boolean;
   onClose: () => void;
-  onApprove: () => void;
-  onReject: () => void;
-  onManualReview: () => void;
-  onRequestDocs: (selectedDocs: string[], customDocs: string) => void;
+  onApprove: (id: string) => void;
+  onReject: (id: string) => void;
+  onManualReview: (id: string) => void;
+  onRequestDocs: (id: string, docs: string[], custom?: string) => void;
+  onSendToAML: (id: string) => void;
+  onAddNote?: (id: string, text: string) => void;
 }
 
 export default function RiskDetailsModal({
@@ -23,30 +24,27 @@ export default function RiskDetailsModal({
   onReject,
   onManualReview,
   onRequestDocs,
+  onSendToAML,
 }: Props) {
-  const requestDocsRef = useRef<HTMLDivElement>(null);
-  const [requestDocsMode, setRequestDocsMode] = useState(false);
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
-  const [customDocs, setCustomDocs] = useState("");
+  const [customDoc, setCustomDoc] = useState<string>("");
 
-  const handleRequestDocsClick = () => {
-    setRequestDocsMode(true);
-    setTimeout(() => {
-      requestDocsRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 50);
-  };
+  const requestDocsRef = useRef<HTMLDivElement | null>(null);
 
-  // Mock KYC/AML
-  const kycStatus = "Paused";
-  const amlStatus = "Clear";
-  const documents = [
-    { nume: "CI.pdf", url: "#" },
-    { nume: "Venituri.pdf", url: "#" },
-  ];
-  const policyRules = [
-    { rule: "Scor minim 600", passed: application.score >= 600 },
-    { rule: "AML clearance", passed: amlStatus === "Clear" },
-  ];
+  function handleScrollToDocs() {
+    requestDocsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }
+
+  function toggleDoc(doc: string) {
+    setSelectedDocs((prev) =>
+      prev.includes(doc) ? prev.filter((d) => d !== doc) : [...prev, doc]
+    );
+  }
+
+  const availableDocs = ["CI", "Venituri", "Contract muncă", "Altele"];
 
   const standardDocs = ["CI", "Venituri", "Contract"];
 
@@ -54,42 +52,14 @@ export default function RiskDetailsModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`Detalii aplicație: ${application.id}`}
+      title={`Aplicație: ${application.id}`}
+      width="max-w-4xl"
       titleClassName="text-blue-600"
-      width="w-full max-w-3xl"
       icon={<ShieldCheck className="w-6 h-6" />}
-      footer={
-        <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-3 w-full sm:w-auto">
-          <Button
-            onClick={() => {
-              onApprove();
-              onClose();
-            }}
-          >
-            Aprobă
-          </Button>
-          <Button
-            onClick={() => {
-              onReject();
-              onClose();
-            }}
-          >
-            Respinge
-          </Button>
-          <Button
-            onClick={() => {
-              onManualReview();
-              onClose();
-            }}
-          >
-            Manual Review
-          </Button>
-          <Button onClick={handleRequestDocsClick}>Cere Documente</Button>
-        </div>
-      }
     >
-      <div className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-2">
-        {/* Client Info */}
+      {/* Container cu scroll */}
+      <div className="flex flex-col gap-6 max-h-[60vh] overflow-y-auto pr-2 pb-4">
+        {/* CLIENT INFO */}
         <section className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
           <h3 className="font-semibold text-lg mb-3 text-gray-700 dark:text-gray-200">
             Client Info
@@ -108,7 +78,7 @@ export default function RiskDetailsModal({
               <strong>Telefon:</strong> 0722 123 456
             </p>
             <p className="sm:col-span-2">
-              <strong>Adresa:</strong> Str. Exemplu, nr.1, Timișoara
+              <strong>Adresă:</strong> Str. Exemplu, nr.1, Timișoara
             </p>
           </div>
         </section>
@@ -141,120 +111,94 @@ export default function RiskDetailsModal({
               Reason Codes
             </h3>
             <ul className="space-y-1 text-gray-500 dark:text-gray-400 text-sm">
-              {application.reasonCodes.map((code, idx) => (
-                <li key={idx}>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">
+              {application.reasonCodes.map((code) => (
+                <li key={code}>
+                  <strong className="text-gray-700 dark:text-gray-300">
                     {code}
-                  </span>{" "}
-                  – {reasonCodeMap[code]}
+                  </strong>{" "}
+                  – {code} description
                 </li>
               ))}
             </ul>
           </section>
         )}
 
-        {/* KYC / AML */}
-        <section className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+        {/* DOCUMENTS REQUEST */}
+        <section
+          ref={requestDocsRef}
+          className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
+        >
           <h3 className="font-semibold text-lg mb-3 text-gray-700 dark:text-gray-200">
-            KYC / AML
+            Solicitare Documente
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-gray-600 dark:text-gray-300">
-            <p>
-              <strong>KYC Status:</strong> {kycStatus}
-            </p>
-            <p>
-              <strong>AML Status:</strong> {amlStatus}
-            </p>
+          <div className="flex flex-col gap-2">
+            {availableDocs.map((doc) => (
+              <label
+                key={doc}
+                className="flex items-center gap-2 text-gray-700 dark:text-gray-300"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedDocs.includes(doc)}
+                  onChange={() => toggleDoc(doc)}
+                  className="accent-blue-600"
+                />
+                {doc}
+              </label>
+            ))}
+            <input
+              type="text"
+              placeholder="Alt document..."
+              value={customDoc}
+              onChange={(e) => setCustomDoc(e.target.value)}
+              className="mt-2 p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+            />
+            <Button
+              onClick={() => {
+                onRequestDocs(application.id, selectedDocs, customDoc);
+                setSelectedDocs([]);
+                setCustomDoc("");
+              }}
+              className="mt-2"
+            >
+              Trimite solicitare
+            </Button>
           </div>
         </section>
+      </div>
 
-        {/* Documents */}
-        <section className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-          <h3 className="font-semibold text-lg mb-3 text-gray-700 dark:text-gray-200">
-            Documente încărcate
-          </h3>
-          <ul className="space-y-1 text-blue-600 dark:text-blue-400">
-            {documents.map((doc) => (
-              <li key={doc.nume}>
-                <a href={doc.url} className="underline">
-                  {doc.nume}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Policy Rules */}
-        <section className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-          <h3 className="font-semibold text-lg mb-3 text-gray-700 dark:text-gray-200">
-            Policy Rules
-          </h3>
-          <ul className="space-y-1 text-gray-600 dark:text-gray-300">
-            {policyRules.map((rule, idx) => (
-              <li key={idx}>
-                {rule.rule} –{" "}
-                <span
-                  className={rule.passed ? "text-green-600" : "text-red-500"}
-                >
-                  {rule.passed ? "Passed ✓" : "Failed ✕"}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* Request Documents Form */}
-        {requestDocsMode && (
-          <section
-            ref={requestDocsRef}
-            className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-300 dark:border-gray-600 shadow-sm mt-4"
-          >
-            <h3 className="font-semibold mb-3 texr-gray-700 dark:text-gray-200">
-              Selecteaza documente de cerut
-            </h3>
-            <div className="flex  flex-col gap-2 ">
-              {standardDocs.map((doc) => (
-                <label className="flex items-center text-gray-700 dark:text-gray-300 ">
-                  <input
-                    type="checkbox"
-                    value={doc}
-                    checked={selectedDocs.includes(doc)}
-                    onChange={(e) => {
-                      if (e.target.checked)
-                        setSelectedDocs([...selectedDocs, doc]);
-                      else selectedDocs(selectedDocs.filter((d) => d !== doc));
-                    }}
-                  />
-                  {doc}
-                </label>
-              ))}
-            </div>
-            <textarea
-              placeholder="Alte documente"
-              value={customDocs}
-              onChange={(e) => setCustomDocs(e.target.value)}
-              className="mt-2 w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 text-gray-800 dark:text-gray-100"
-            />
-
-            <div className="mt-3 flex justify-end gap-2">
-              <Button
-                onClick={() => {
-                  onRequestDocs(selectedDocs, customDocs);
-                  setRequestDocsMode(false);
-                  onClose();
-                }}
-              >
-                Trimite cererea
-              </Button>
-              <Button
-                // variant="secundary"
-                onClick={() => setRequestDocsMode(false)}
-              >
-                Renunta
-              </Button>
-            </div>
-          </section>
-        )}
+      {/* Sticky action bar la baza modalului */}
+      <div className="sticky bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur border-t border-gray-200 dark:border-gray-700 p-4 flex flex-wrap items-center justify-end gap-2 z-20">
+        <Button
+          onClick={() => onReject(application.id)}
+          className="bg-red-600 sm:w-auto w-full"
+        >
+          Respinge
+        </Button>
+        <Button
+          onClick={() => onManualReview(application.id)}
+          className="bg-yellow-500 sm:w-auto w-full"
+        >
+          Manual Review
+        </Button>
+        <Button
+          onClick={() => handleScrollToDocs()}
+          className="bg-indigo-600 sm:w-auto w-full"
+        >
+          Solicită Documente
+        </Button>
+        <Button
+          onClick={() => onSendToAML(application.id)}
+          className="bg-purple-600 sm:w-auto w-full "
+        >
+          Trimite la AML
+        </Button>
+        <Button
+          onClick={() => onApprove(application.id)}
+          className="bg-green-600 sm:w-auto w-full"
+        >
+          Aprobă
+        </Button>
       </div>
     </Modal>
   );
