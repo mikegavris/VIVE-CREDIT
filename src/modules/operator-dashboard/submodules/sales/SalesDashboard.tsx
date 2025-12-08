@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+
 
 import { salesData, type SalesApplication } from "./mock-data";
 import SalesStatusBadge from "./components/SalesStatusBadge";
@@ -19,6 +19,11 @@ export default function SalesDashboard() {
   const [selectedProduct, setSelectedProduct] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedAgent, setSelectedAgent] = useState("");
+
+// Pagination
+const [page, setPage] = useState(1);
+const itemsPerPage = 4;
+const totalPages = Math.ceil(salesData.length / itemsPerPage);
 
   // 📄 PDF modal
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -60,13 +65,15 @@ const [, setDocsOpen] = useState(false);
   };
 
   // 🔍 Filter logic
-  const filteredData = salesData.filter((app) => {
+ const filteredData = salesData
+  .filter((app) => {
     const matchClient = app.client.toLowerCase().includes(searchClient.toLowerCase());
     const matchProduct = selectedProduct === "all" || app.productValue === selectedProduct;
     const matchStatus = selectedStatus === "all" || app.statusValue === selectedStatus;
     const matchAgent = selectedAgent === "" || app.agent.toLowerCase().includes(selectedAgent.toLowerCase());
     return matchClient && matchProduct && matchStatus && matchAgent;
-  });
+  })
+  .slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   const resetFilters = () => {
     setSearchClient("");
@@ -81,18 +88,6 @@ const [, setDocsOpen] = useState(false);
   return (
     <div className="p-6 md:p-10">
 
-      {/* --- Tabs --- */}
-      <div className="flex gap-4 mb-8">
-        <Link to="/sales" className="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium shadow">
-          Sales
-        </Link>
-        <Link to="/risk" className="px-6 py-2 rounded-lg border bg-white font-medium shadow">
-          Risk
-        </Link>
-        <Link to="/collections" className="px-6 py-2 rounded-lg border bg-white font-medium shadow">
-          Collections
-        </Link>
-      </div>
 
       <h1 className="text-3xl font-bold mb-6">Sales Dashboard</h1>
 
@@ -209,7 +204,29 @@ const [, setDocsOpen] = useState(false);
             ))}
           </tbody>
         </table>
+        
       </div>
+
+      {/* PAGINATION */}
+{totalPages > 1 && (
+  <div className="flex justify-center gap-3 p-4">
+    <button
+      disabled={page === 1}
+      onClick={() => setPage(page - 1)}
+      className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg disabled:opacity-40"
+    >
+      Prev
+    </button>
+
+    <button
+      disabled={page === totalPages}
+      onClick={() => setPage(page + 1)}
+      className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg disabled:opacity-40"
+    >
+      Next
+    </button>
+  </div>
+)}
 
       {/* --- Modals --- */}
       <PDFModal pdfUrl={pdfUrl} onClose={closePdf} />
