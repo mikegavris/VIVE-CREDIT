@@ -37,6 +37,10 @@ import RiskPage from "@/modules/operator-dashboard/pages/RiskPage";
 import SalesDashboard from "@/modules/operator-dashboard/submodules/sales/SalesDashboard";
 import ApplicationDetail from "@/modules/operator-dashboard/submodules/sales/ApplicationDetail";
 import ProductSettingsPage from "@/modules/admin-products/pages/ProductSettingsPage";
+import ClientManagementPage from "@/modules/operator-dashboard/pages/ClientManagement";`
+`
+
+
 
 /* Engines */
 import { PolicyEnginePage } from "@/modules/scoring";
@@ -160,6 +164,21 @@ const AppRoutes = () => {
         <Route path="products-settings" element={<ProductSettingsPage />} />
       </Route>
 
+<Route
+  path="/operator"
+  element={
+    <ProtectedRoute allowedRoles={["operator"]}>
+      <OperatorDashboardLayout />
+    </ProtectedRoute>
+  }
+>
+  <Route index element={<OperatorDashboardPage />} />
+  <Route path="risk" element={<RiskPage />} />
+  <Route path="sales" element={<SalesDashboard />} />
+  <Route path="sales/:id" element={<ApplicationDetail />} />
+  <Route path="products-settings" element={<ProductSettingsPage />} />
+  <Route path="clients" element={<ClientManagementPage />} />  {/* ← ADAUGĂ AICI */}
+</Route>
       <Route path="policy-engine" element={<PolicyEnginePage />} />
       <Route path="decision-engine" element={<DecisionPage />} />
       <Route path="scorecard" element={<ScorecardEngine />} />
