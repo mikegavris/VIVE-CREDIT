@@ -44,7 +44,8 @@ import ApplicationsPage from "@/modules/operator-dashboard/pages/ApplicationsPag
 import OperatorDashboardPage from "@/modules/operator-dashboard/pages/OperatorDasboardPage";
 import RiskPage from "@/modules/operator-dashboard/pages/RiskPage";
 import ApplicationDetail from "@/modules/operator-dashboard/submodules/sales/ApplicationDetail";
-import ProductSettingsPage from "@/modules/admin-products/pages/ProductSettingsPage";
+import SalesDashboard from "@/modules/operator-dashboard/submodules/sales/SalesDashboard";
+
 import ClientManagementPage from "@/modules/operator-dashboard/pages/ClientManagement";
 
 /* Engines */
