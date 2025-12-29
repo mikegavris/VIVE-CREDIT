@@ -21,17 +21,18 @@ export const ApplicationFormSchema = z.object({
     .string()
     .min(1, "Acest camp este obligatoriu")
     .email("Adresa de email este invalida"),
-  telefon: z.string().regex(/^07\d{8}$/, {
-    message: "Numarul de telefon trebuie sa inceapa cu 07 si sa aiba 10 cifre",
+  telefon: z.string().regex(/^\+40\d{9}$/, {
+    message: "Numarul de telefon trebuie sa inceapa cu +40 urmat de 9 cifre",
   }),
   venitLunar: z.coerce
     .number({ invalid_type_error: "Introdu o valoare numerica" })
-    .pipe(z.number().min(2500, "Venitul lunar trebuie sa fie cel putin 2500")),
+    .min(2500, "Venitul lunar trebuie sa fie cel putin 2500"),
   angajator: z.string().min(1, "Acest camp este obligatoriu"),
   ocupatie: z.string().min(1, "Acest camp este obligatoriu"),
-  vechimeInMunca: z
+  vechimeInMunca: z.coerce
     .number()
-    .nonnegative("Vechimea in munca trebuie sa fie mai mare ca 0"),
+    .nonnegative("Vechimea in munca trebuie sa fie mai mare ca 0")
+    .gte(1, "Vechimea in munca trebuie sa fie cel putin 1"),
   tipProdus: z.string().min(1, "Acest camp este obligatoriu"),
   sumaCeruta: z
     .number()
@@ -83,6 +84,10 @@ export const ApplicationFormSchema = z.object({
 });
 
 export type Inputs = z.infer<typeof ApplicationFormSchema>;
+export type FormValues = Omit<Inputs, "venitLunar" | "vechimeInMunca"> & {
+  venitLunar: string;
+  vechimeInMunca: string;
+};
 export type FieldName = keyof Inputs;
 
 export type Pas = {

@@ -17,6 +17,7 @@ function Consimtamant({ errors, control }: StepPropsWithWatch) {
                 id='benerificarReal'
                 checked={field.value}
                 onCheckedChange={field.onChange}
+                className='data-[state=checked]:bg-blue-600 dark:data-[state=unchecked]:bg-blue-800 dark:data-[state=checked]:bg-blue-300'
               />
             )}
           />
@@ -43,6 +44,7 @@ function Consimtamant({ errors, control }: StepPropsWithWatch) {
                 id='termeniSiConditii'
                 checked={field.value}
                 onCheckedChange={field.onChange}
+                className='data-[state=checked]:bg-blue-600 dark:data-[state=unchecked]:bg-blue-800 dark:data-[state=checked]:bg-blue-300'
               />
             )}
           />
@@ -52,7 +54,7 @@ function Consimtamant({ errors, control }: StepPropsWithWatch) {
               <Link
                 to='/terms'
                 target='_blank'
-                className='text-blue-700 underline'
+                className='text-blue-700 underline dark:text-blue-300'
               >
                 Termenii şi condiţiile
               </Link>{" "}
@@ -60,7 +62,7 @@ function Consimtamant({ errors, control }: StepPropsWithWatch) {
               <Link
                 to='/privacy'
                 target='_blank'
-                className='text-blue-700 underline'
+                className='text-blue-700 underline dark:text-blue-300'
               >
                 Politica de confidențialitate
               </Link>{" "}
@@ -83,6 +85,7 @@ function Consimtamant({ errors, control }: StepPropsWithWatch) {
                 id='oferte'
                 checked={field.value}
                 onCheckedChange={field.onChange}
+                className='data-[state=checked]:bg-blue-600 dark:data-[state=unchecked]:bg-blue-800 dark:data-[state=checked]:bg-blue-300'
               />
             )}
           />
@@ -93,7 +96,7 @@ function Consimtamant({ errors, control }: StepPropsWithWatch) {
               <Link
                 to='/terms'
                 target='_blank'
-                className='text-blue-700 underline'
+                className='text-blue-700 underline dark:text-blue-300'
               >
                 Termenilor şi condiţiilor
               </Link>{" "}
