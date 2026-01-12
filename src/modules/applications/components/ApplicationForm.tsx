@@ -1,5 +1,6 @@
+import { addNotification } from "@/components/notifications/notifications.actions";
 import { Button } from "@/components/ui/button";
-import { DevTool } from "@hookform/devtools";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -92,6 +93,7 @@ function ApplicationForm() {
       termeniSiConditii: false,
       oferte: false,
     },
+    mode: "onBlur",
 
     resolver: zodResolver(ApplicationFormSchema),
   });
@@ -110,12 +112,13 @@ function ApplicationForm() {
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     console.log(data, "Form submitted");
     const applicationId = "VC-" + Date.now();
-    navigate("/onboarding/success", {
-      state: {
-        applicationId,
-        fullName: rezumatData?.nume,
-      },
+    addNotification({
+      text: `Aplicatia #${applicationId} a fost adaugata cu succes.`,
+      date: new Date().toISOString(),
+      read: false,
+      type: "system",
     });
+    navigate("/dashboard/home");
   };
 
   const next = async () => {
@@ -204,7 +207,7 @@ function ApplicationForm() {
                   {isCompleted ? <Check size={14} /> : current}
                 </div>
 
-                <span className='text-[10px] mt-1 text-blue-700 dark:text-blue-300 leading-tight text-center'>
+                <span className='hidden lg:block text-[10px] mt-1 text-blue-700 dark:text-blue-300 leading-tight text-center'>
                   {pas.titlu}
                 </span>
               </div>
@@ -246,7 +249,12 @@ function ApplicationForm() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} noValidate autoComplete='off'>
             {currentStep === 1 && (
-              <DatePersonale register={register} errors={errors} />
+              <DatePersonale
+                register={register}
+                errors={errors}
+                control={control}
+                watch={watch}
+              />
             )}
             {currentStep === 2 && (
               <DateFinanciare register={register} errors={errors} />
@@ -281,9 +289,6 @@ function ApplicationForm() {
           </form>
         </CardContent>
 
-        {/* Dev tool */}
-        <DevTool control={control} />
-
         {/* butoane */}
         <CardFooter>
           <div className='flex w-full justify-between'>
@@ -293,6 +298,9 @@ function ApplicationForm() {
                   variant='secondary'
                   disabled={currentStep === 1}
                   onClick={prev}
+                  className={cn(
+                    "border border-blue-200 dark:border-blue-600/80"
+                  )}
                 >
                   Pasul anterior
                 </Button>
