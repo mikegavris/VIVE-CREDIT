@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { useState } from 'react';
+import { NavLink, Outlet } from 'react-router-dom';
 import {
   Menu,
   X,
@@ -17,13 +17,14 @@ import {
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import UserBadge from "@/components/UserBadge";
-import { ApplicationsContextProvider } from "../hooks/ApplicationsContext"; // ✅ ADAUGĂ ACEST IMPORT
+import { ApplicationsContextProvider } from "../hooks/ApplicationsContext"; // ✅ ADAUGĂ
 
 const navItems = [
   { label: "Acasǎ", path: ".", icon: Home },
   { label: "Vânzǎri", path: "sales", icon: DollarSign },
   { label: "Risc", path: "risk", icon: ShieldCheck },
   { label: "Încasǎri", path: "collections", icon: Users },
+  { label: 'Rapoarte', path: 'reports', icon: FileText },
 ];
 
 export default function OperatorDashboardLayout() {
@@ -32,10 +33,10 @@ export default function OperatorDashboardLayout() {
   const { theme, toggleTheme } = useTheme();
 
   const linkClasses =
-    "flex items-center gap-3 px-3 py-2 rounded-lg transition font-medium";
+    'flex items-center gap-3 px-3 py-2 rounded-lg transition font-medium';
 
   return (
-    <ApplicationsContextProvider> {/* ✅ ÎNCONJOARĂ TOT CU PROVIDER-UL */}
+    <ApplicationsContextProvider> {/* ✅ DESCHIDE AICI */}
       <div className="flex h-screen">
         {/* Mobile top bar */}
         <div className="md:hidden fixed top-0 left-0 w-full bg-white dark:bg-gray-800 shadow-sm z-30 p-4 flex items-center justify-between">
@@ -203,18 +204,17 @@ export default function OperatorDashboardLayout() {
               </div>
             </nav>
           </div>
-
-          {/* User badge fixed bottom */}
+{/* User badge fixed bottom */}
           <div className="mt-6 md:mt-0">
             <UserBadge />
           </div>
         </aside>
 
         {/* Main content */}
-      <main className="flex-1 min-w-0 min-h-0 overflow-auto px-4 pt-20 md:px-8 md:pt-8 dark:bg-gray-900 dark:text-gray-100">
-        <Outlet />
-      </main>
-    </div>
-  </ApplicationsContextProvider>
-);
+        <main className="flex-1 min-w-0 min-h-0 overflow-auto px-4 pt-20 md:px-8 md:pt-8 dark:bg-gray-900 dark:text-gray-100">
+          <Outlet />
+        </main>
+      </div>
+    </ApplicationsContextProvider>
+  );
 }
