@@ -48,6 +48,9 @@ import OperatorDashboardPage from '@/modules/operator-dashboard/pages/OperatorDa
 import RiskPage from '@/modules/operator-dashboard/pages/RiskPage';
 import ApplicationDetail from '@/modules/operator-dashboard/submodules/sales/ApplicationDetail';
 import SalesDashboard from '@/modules/operator-dashboard/submodules/sales/SalesDashboard';
+import AuditLog from '@/modules/admin/pages/AuditLog';
+import ReportsPage from '@/modules/operator-dashboard/submodules/reports/ReportsPage';
+import CollectionsDashboard from '@/modules/operator-dashboard/submodules/collections/components/CollectionsDashboard';
 
 
 
@@ -58,7 +61,6 @@ import { PolicyEnginePage, ScoringCalculatorPage } from '@/modules/scoring';
 import { ScorecardEngine } from '@/modules/scoring/pages/ScorecardEngine';
 
 /* Protected route */
-
 import ProtectedAdminRoute from '@/components/ProtectedAdminRoute';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminHomePage from '@/modules/admin/pages/AdminHomePage';
@@ -67,7 +69,6 @@ import RequestLoanPage from '@/modules/applications/pages/RequestLoanPage';
 import AdminLoginPage from '@/modules/auth/pages/AdminLoginPage';
 import { ApplicationsContextProvider } from '@/modules/operator-dashboard/hooks/ApplicationsContext';
 import FormScorecardClient from '@/modules/scoring/pages/FormScorecardClient';
-import ReportsPage from '@/modules/operator-dashboard/submodules/reports/ReportsPage';
 
 const AppRoutes = () => {
   return (
@@ -78,7 +79,6 @@ const AppRoutes = () => {
         <Route path='/products' element={<ProductsPage />} />
         <Route path='/about' element={<AboutPage />} />
         <Route path='/contact' element={<ContactPage />} />
-
         <Route path='/terms' element={<TermsPage />} />
         <Route path='/privacy' element={<PrivacyPage />} />
         <Route path='/anpc' element={<AnpcPage />} />
@@ -116,6 +116,8 @@ const AppRoutes = () => {
           </ProtectedAdminRoute>
         }
       />
+
+      <Route path='/admin/audit-log' element={<AuditLog />} />
 
       {/* CLIENT ONBOARDING */}
       <Route
@@ -217,6 +219,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+
       <Route
         path='/dashboard/verification-timeline'
         element={
@@ -227,32 +230,13 @@ const AppRoutes = () => {
       />
 
       <Route
-        path='/dashboard/loan-form'
-        element={
-          <ProtectedRoute allowedRoles={['client']}>
-            <LoanForm />
-          </ProtectedRoute>
-        }
-      />
-      {/*
-      <Route
-        path="/dashboard/decision-result"
-        element={
-          <ProtectedRoute allowedRoles={["client"]}>
-            <DecisionResultCard />
-          </ProtectedRoute>
-        }
-      />*/}
-
-      {/* Scoring */}
-
-      <Route path='/calculator' element={<ScoringCalculatorPage />} />
-      <Route path='/form' element={<FormScorecardClient />} />
-
-      <Route
         path='/dashboard/decision-result'
         element={<DecisionResultCard />}
       />
+
+      {/* Scoring */}
+      <Route path='/calculator' element={<ScoringCalculatorPage />} />
+      <Route path='/form' element={<FormScorecardClient />} />
 
       {/* OPERATOR DASHBOARD */}
       <Route
@@ -274,6 +258,8 @@ const AppRoutes = () => {
         <Route path='policy-engine' element={<PolicyEnginePage />} />
         <Route path='decision-engine' element={<DecisionPage />} />
         <Route path='scorecard' element={<ScorecardEngine />} />
+        <Route path='collections' element={<CollectionsDashboard />} />
+        <Route path='audit-log' element={<AuditLog />} />
         <Route path='reports' element={<ReportsPage />} />
       </Route>
 
@@ -293,9 +279,6 @@ const AppRoutes = () => {
 
       {/* FALLBACK */}
       <Route path='*' element={<Navigate to='/' replace />} />
-
-      {/* Policy Engine */}
-      <Route path='/policy-engine' element={<PolicyEnginePage />} />
     </Routes>
   );
 };
