@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/table";
 import type { AuditLog } from "./types";
 
-
 interface Props {
   logs: AuditLog[];
 }
