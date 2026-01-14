@@ -112,7 +112,6 @@ const ApplicationsTable = () => {
     }
   };
 
-<<<<<<< HEAD
   const openClientDetails = (app: Application) => {
     setSelectedClient(app);
     setIsModalOpen(true);
@@ -243,24 +242,6 @@ const ApplicationsTable = () => {
       updateContextStatus(originalApp.id, 'pending');
     }
   };
-=======
-  // 🔍 Filter logic
-  const filteredData = salesData
-    .filter((app) => {
-      const matchClient = app.client
-        .toLowerCase()
-        .includes(searchClient.toLowerCase());
-      const matchProduct =
-        selectedProduct === "all" || app.productValue === selectedProduct;
-      const matchStatus =
-        selectedStatus === "all" || app.statusValue === selectedStatus;
-      const matchAgent =
-        selectedAgent === "" ||
-        app.agent.toLowerCase().includes(selectedAgent.toLowerCase());
-      return matchClient && matchProduct && matchStatus && matchAgent;
-    })
-    .slice((page - 1) * itemsPerPage, page * itemsPerPage);
->>>>>>> origin/main
 
   const resetFilters = () => {
     setSelectedStatus('toate');
@@ -357,7 +338,6 @@ const ApplicationsTable = () => {
             </div>
           )}
 
-<<<<<<< HEAD
           {/* Tabel - Desktop */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
@@ -388,92 +368,6 @@ const ApplicationsTable = () => {
                       key={app.id} 
                       onClick={() => openClientDetails(app)}
                       className="border-b border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700/30 cursor-pointer transition-colors"
-=======
-        {/* Status */}
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-semibold">Stare</label>
-          <CustomSelect
-            value={selectedStatus}
-            onChange={setSelectedStatus}
-            options={[
-              { label: "Toate", value: "all" },
-              { label: "Nou", value: "nou" },
-              { label: "În lucru", value: "in_lucru" },
-              { label: "Finalizat", value: "finalizat" },
-            ]}
-          />
-        </div>
-
-        {/* Agent */}
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-semibold">Agent</label>
-          <input
-            type="text"
-            value={selectedAgent}
-            onChange={(e) => setSelectedAgent(e.target.value)}
-            placeholder="Caută agent..."
-            className="border dark:border-gray-600 px-3 py-2 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500"
-          />
-        </div>
-      </div>
-
-      {/* Reset button */}
-      <button
-        onClick={resetFilters}
-        className="px-6 py-2 mb-6 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700"
-      >
-        Resetează filtre
-      </button>
-
-      {/* --- Table --- */}
-      <div className="overflow-x-auto border rounded-xl shadow-sm">
-        <table className="w-full text-left">
-          <thead className="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
-            <tr>
-              <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">
-                ID
-              </th>
-              <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">
-                Client
-              </th>
-              <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">
-                Produs
-              </th>
-              <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">
-                Sumă
-              </th>
-              <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">
-                Status
-              </th>
-              <th className="px-4 py-3 font-semibold text-gray-700 dark:text-gray-300">
-                Acțiuni
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredData.map((app) => (
-              <tr
-                key={app.id}
-                onClick={() => openView(app)}
-                className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer"
-              >
-                <td className="px-4 py-3">{app.id}</td>
-                <td className="px-4 py-3">{app.client}</td>
-                <td className="px-4 py-3">{app.product}</td>
-                <td className="px-4 py-3">{app.amount} RON</td>
-                <td className="px-4 py-3">
-                  <SalesStatusBadge status={app.status} />
-                </td>
-                <td className="px-4 py-3">
-                  <div
-                    className="flex gap-3"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={() => openView(app)}
-                      className="px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
->>>>>>> origin/main
                     >
                       <td className="p-4" onClick={(e) => e.stopPropagation()}>
                         {showCheckboxes && (
@@ -778,20 +672,8 @@ const ApplicationsTable = () => {
           </div>
         </div>
       )}
-<<<<<<< HEAD
     </div>
   );
 };
 
 export default ApplicationsTable;
-=======
-
-      {/* --- Modals --- */}
-      {pdfUrl && <PDFModal pdfUrl={pdfUrl} onClose={closePdf} />}
-
-      <DocsModal app={selectedApp} onClose={closeDocs} />
-      <ViewModal app={viewApp} open={viewOpen} onClose={closeView} />
-    </div>
-  );
-}
->>>>>>> origin/main
