@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { mockDB } from "@/modules/operator-dashboard/data/mockDB";
+import { useApplications } from "../../hooks/ApplicationsContext";
+
 interface Application {
   id: number;
   name: string;
@@ -24,6 +25,9 @@ interface Application {
 }
 
 const ApplicationsTable = () => {
+  // ✅ Citește din Context
+  const { applications: contextApps, updateStatus: updateContextStatus } = useApplications();
+
   const [selectedStatus, setSelectedStatus] = useState<string>('toate');
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [showCheckboxes, setShowCheckboxes] = useState(false);
@@ -32,21 +36,24 @@ const ApplicationsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
   
-const [applications, setApplications] = useState<Application[]>(
-  mockDB.map((app, index) => ({
-    id: index + 1,
-    name: app.client,
-    amount: `${app.creditAmount} RON`,
-    date: new Date().toLocaleDateString('ro-RO'),
-    status: app.status === 'manual_review' ? 'in-lucru' : 
-            app.status === 'pending' ? 'nou' :
-            app.status === 'approved' ? 'aprobat' : 'respins',
-    phone: app.contact?.phone,
-    email: app.contact?.email,
-    cnp: undefined,
-    address: undefined,
-  }))
-);
+  // ✅ TRANSFORMĂ datele din Context în format local - NU mai e useState
+  const applications = useMemo(() => 
+    contextApps.map((app, index) => ({
+      id: index + 1,
+      name: app.client,
+      amount: `${app.creditAmount} RON`,
+      date: new Date().toLocaleDateString('ro-RO'),
+      status: app.status === 'manual_review' ? 'in-lucru' as const : 
+              app.status === 'pending' ? 'nou' as const :
+              app.status === 'approved' ? 'aprobat' as const : 
+              app.status === 'rejected' ? 'respins' as const : 'nou' as const,
+      phone: app.contact?.phone,
+      email: app.contact?.email,
+      cnp: undefined,
+      address: undefined,
+    })),
+    [contextApps] // ✅ Re-calculează când contextApps se schimbă
+  );
 
   const statusColors = {
     'nou': 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
@@ -120,6 +127,7 @@ const [applications, setApplications] = useState<Application[]>(
   const canReject = selectedApps.some(app => app.status === 'nou' || app.status === 'in-lucru');
   const canReview = selectedApps.some(app => app.status === 'in-lucru');
 
+  // ✅ Funcții bulk - folosesc DOAR Context
   const handleBulkApprove = () => {
     if (selectedIds.length === 0) {
       alert('Selectează cel puțin o aplicație');
@@ -137,13 +145,13 @@ const [applications, setApplications] = useState<Application[]>(
     }
     
     if (confirm(`Ești sigur că vrei să aprobi ${eligibleIds.length} aplicații?`)) {
-      setApplications(prev => 
-        prev.map(app => 
-          eligibleIds.includes(app.id) 
-            ? { ...app, status: 'aprobat' as const }
-            : app
-        )
-      );
+      eligibleIds.forEach(id => {
+        const originalApp = contextApps[id - 1];
+        if (originalApp?.id) {
+          updateContextStatus(originalApp.id, 'approved');
+        }
+      });
+      
       setSelectedIds([]);
       setShowCheckboxes(false);
       alert(`${eligibleIds.length} aplicații au fost aprobate!`);
@@ -167,13 +175,13 @@ const [applications, setApplications] = useState<Application[]>(
     }
     
     if (confirm(`Ești sigur că vrei să respingi ${eligibleIds.length} aplicații?`)) {
-      setApplications(prev => 
-        prev.map(app => 
-          eligibleIds.includes(app.id) 
-            ? { ...app, status: 'respins' as const }
-            : app
-        )
-      );
+      eligibleIds.forEach(id => {
+        const originalApp = contextApps[id - 1];
+        if (originalApp?.id) {
+          updateContextStatus(originalApp.id, 'rejected');
+        }
+      });
+      
       setSelectedIds([]);
       setShowCheckboxes(false);
       alert(`${eligibleIds.length} aplicații au fost respinse!`);
@@ -197,44 +205,42 @@ const [applications, setApplications] = useState<Application[]>(
     }
     
     if (confirm(`Ești sigur că vrei să revizuiești ${eligibleIds.length} aplicații?`)) {
-      setApplications(prev => 
-        prev.map(app => 
-          eligibleIds.includes(app.id) 
-            ? { ...app, status: 'nou' as const }
-            : app
-        )
-      );
+      eligibleIds.forEach(id => {
+        const originalApp = contextApps[id - 1];
+        if (originalApp?.id) {
+          updateContextStatus(originalApp.id, 'pending');
+        }
+      });
+      
       setSelectedIds([]);
       setShowCheckboxes(false);
       alert(`${eligibleIds.length} aplicații au fost trimise la revizuire!`);
     }
   };
 
+  // ✅ Funcții individuale - folosesc DOAR Context
   const handleApprove = (id: number, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setApplications(prev => 
-      prev.map(app => 
-        app.id === id ? { ...app, status: 'aprobat' as const } : app
-      )
-    );
+    const originalApp = contextApps[id - 1];
+    if (originalApp?.id) {
+      updateContextStatus(originalApp.id, 'approved');
+    }
   };
 
   const handleReject = (id: number, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setApplications(prev => 
-      prev.map(app => 
-        app.id === id ? { ...app, status: 'respins' as const } : app
-      )
-    );
+    const originalApp = contextApps[id - 1];
+    if (originalApp?.id) {
+      updateContextStatus(originalApp.id, 'rejected');
+    }
   };
 
   const handleReturnToReview = (id: number, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setApplications(prev => 
-      prev.map(app => 
-        app.id === id ? { ...app, status: 'nou' as const } : app
-      )
-    );
+    const originalApp = contextApps[id - 1];
+    if (originalApp?.id) {
+      updateContextStatus(originalApp.id, 'pending');
+    }
   };
 
   const resetFilters = () => {
@@ -658,6 +664,8 @@ const [applications, setApplications] = useState<Application[]>(
                   >
                     Închide
                   </Button>
+
+                  
                 </div>
               </div>
             )}
